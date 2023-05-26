@@ -18,7 +18,6 @@ if __name__ == '__main__':
             'Programming Language :: Python :: 3',
             'License :: OSI Approved :: MIT License',
             'Operating System :: OS Independent',
-            'Development Status:: 1 - Planning'
         ],
         python_requires='>=3.11',
         install_requires=[
