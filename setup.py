@@ -3,9 +3,10 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(
         name='pybe',
-        version='1.0.0',
+        version='0.0.1',
         license='MIT',
-        description='Small package in order to benchmark python functions',
+        description='Small package for benchmarking python functions',
+        long_description='This is my long description',
         author='Nicolai Palm',
         author_email='nicolaipalm@googlemail.com',
         classifiers=[
@@ -19,6 +20,8 @@ if __name__ == '__main__':
             'numpy',
             'plotly',
             'tqdm',
+            'pandas',
+
         ],
         extras_require={
             'dev': ['pre-commit', 'flake8', 'flake8-print'],
