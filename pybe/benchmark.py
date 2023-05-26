@@ -1,8 +1,6 @@
 from typing import List, Callable, Dict, Union, Optional
-
 import pandas as pd
 from tqdm import tqdm
-import yaml
 import multiprocessing as mp
 
 
@@ -10,10 +8,9 @@ class Benchmark:
     """Benchmark any Python function
 
     This class lets you
-    - bootstrap any Python function
-    - store the results in a yaml, excel or csv file
-    - convert them into a pandas data frame
-    - read from previous benchmark results.
+    **benchmark** any Python function (with vectors of real numbers as output)
+    **store** the results in a csv (default) or excel file
+    **read** from previous benchmark results.
 
     .. epigraph::
         **How it works:**
@@ -21,15 +18,15 @@ class Benchmark:
     """
 
     def __init__(self,
-                 benchmark_yaml_file_path: Optional[str] = None,
+                 benchmark_csv_file_path: Optional[str] = None,
                  ):
-        if benchmark_yaml_file_path is not None:
-            self.read_from_yaml(benchmark_yaml_file_path)
+        if benchmark_csv_file_path is not None:
+            self.read_from_csv(benchmark_csv_file_path)
 
     def __call__(self,
-                 function: Callable[..., Dict[Union[str, float], float]],
+                 function: Callable[..., Dict[str, float]],
                  inputs: List[Union[str, float]],
-                 meta_data: Dict,
+                 name: str,
                  number_runs: int = 10,
                  store: bool = True,
                  parallel: bool = False,
@@ -39,14 +36,12 @@ class Benchmark:
 
         Parameters
         ----------
-        function : Callable[..., Dict[Union[str, float], float]]
-            function to be benchmarked which takes either a string or float as input and returns a float as output
+        function : Callable[..., Dict[str, float]]
+            function to be benchmarked which returns a dictionary with keys the _name of the output (string)
+            and value the value of the function (float)
 
         inputs : List[Union[str, float]]
             inputs on which the function is to be benchmarked stored as a list of strings or floats
-
-        meta_data : dict
-            all meta data of the benchmark stored as a dictionary
 
         number_runs : int
             number of runs for each inputs
@@ -78,21 +73,16 @@ class Benchmark:
 
         >>> number_runs=3
 
-        Store the meta information about the benchmark as a dictionary
-
-        >>> meta_data = {"Name": "Test","Place":"Gringots"}
-
         Run the benchmark
 
         >>> benchmark(function=test_function,
-        ...           meta_data=meta_data,
+        ...           name="test-benchmark",
         ...           inputs=inputs,
         ...           number_runs=number_runs)
         """
 
-        self.meta = meta_data
-        self.result = {
-        }
+        self._name = name
+        self._inputs = inputs
 
         # TODO: test what if dict contains numpy array or others...
         if parallel:
@@ -102,54 +92,49 @@ class Benchmark:
                     with mp.Pool() as pool:
                         results_x = pool.map(function, [x for _ in range(number_runs)])
                     # re-arrange results
-                    self.result[x] = {key: [value[key] for value in results_x] for key in results_x[0].keys()}
+                    self._result[x] = {key: [value[key] for value in results_x] for key in results_x[0].keys()}
+
                 except RuntimeError:
                     print("benchmark(test_function) needs to be inside the if __name__ == '__main__': "
-                          "clause to prevent spawning infinite processes.")
+                          'clause to prevent spawning infinite processes.')
                     break
 
         else:
+            self._result = []
             for x in tqdm(inputs):
-                results_x = [function(x) for _ in range(number_runs)]
-                # re-arrange results
-                self.result[x] = {key: [value[key] for value in results_x] for key in results_x[0].keys()}
+                for _ in range(number_runs):
+                    result_x = function(x)
+                    result_x['Input'] = x
+                    result_x['Name'] = name
+                    self._result.append(result_x)
+        self._name_outputs = list(result_x.keys())
+        self._result = pd.concat([pd.DataFrame(result, index=[0]) for result in self._result], ignore_index=True)
 
         if store:
-            self.to_yaml()
+            self.to_csv(name)
 
-    def to_yaml(self, name: str = "benchmark"):
-        """Save results to yaml file
-
-        Parameters
-        ----------
-        name : str
-            name of the benchmark
-        """
-        with open(f"{name}.yaml", "w") as f:
-            yaml.dump({"Meta": self.meta, "Result": self.result}, f)
-
-    def to_excel(self, name: str = "benchmark"):
+    def to_excel(self, name: str = 'benchmark'):
         """Save results to excel (xlsx) file
 
         Parameters
         ----------
         name : str
-            name of the benchmark
+            _name of the benchmark
         """
-        self.result_data_frame.to_excel(f"{name}.xlsx")
+        self.result.to_excel(f'{name}.xlsx')
 
-    def to_csv(self, name: str = "benchmark"):
+    def to_csv(self, name: str = 'benchmark'):
         """Save results to csv file
 
         Parameters
         ----------
         name : str
-            name of the benchmark
+            _name of the benchmark
         """
-        self.result_data_frame.to_csv(f"{name}.csv")
+        self.result.to_csv(f'{name}.csv', index=False)
 
     @property
-    def result_data_frame(self) -> pd.DataFrame:
+    def result(self) -> pd.DataFrame:
         """Return the result of the benchmark as a pandas DataFrame
 
         Returns
@@ -158,14 +143,9 @@ class Benchmark:
             result of the benchmark
 
         """
-        return pd.DataFrame.from_dict(
-            {("Input: " + str(input), "Output: " + str(output_name)): {("Iteration", i + 1): value for i, value in
-                                                                       enumerate(self.result[input][output_name])}
-             for input in self.result.keys()
-             for output_name in self.result[input].keys()},
-            orient='index')
+        return self._result
 
-    def read_from_yaml(self, benchmark_yaml_file_path: str):
+    def read_from_csv(self, benchmark_yaml_file_path: str):
         """Read previous results of corresponding yaml file and store them in this instance
 
         Parameters
@@ -176,35 +156,74 @@ class Benchmark:
         Examples
         --------
         >>> benchmark = Benchmark() # initialize benchmark instance
-        >>> benchmark.read_from_yaml(benchmark_yaml_file_path="./benchmark.yaml") # read results
-        >>> print(benchmark.inputs) # print inputs
+        >>> benchmark.read_from_csv(benchmark_csv_file_path="./benchmark1.csv") # read results
+        >>> print(benchmark.result) # print result
         """
-        try:
-            with open(benchmark_yaml_file_path) as f:
-                content = yaml.load(f, Loader=yaml.FullLoader)
-                self.meta = content.get("Meta")
-                self.result = content.get("Result")
-        except:
-            print("Something went wrong when reading the benchmark yaml file.")
+        self._result = pd.read_csv(benchmark_yaml_file_path)
+
+    def return_outputs(self, input: float):
+        return self.result.loc[self.result['Input'] == input]
 
     @property
     def inputs(self) -> List[Union[str, float]]:
-        """Return the given inputs of the benchmark
+        """Return the list of inputs of the benchmark
 
         Returns
         -------
         List[Union[str, float]]
-            input of benchmark
+            inputs of the benchmark
+
         """
-        return list(self.result.keys())
+        return list(set(self.result['Input'].values))
 
     @property
     def name_outputs(self) -> List[str]:
-        """Return the names (i.e. keys) of the outputs of the benchmark
+        """Return the list of names of outputs of the benchmark
 
         Returns
         -------
-        List[Union[str, float]]
-            name of outputs of benchmark
+        List[str]
+            name of outputs
+
         """
-        return list(self.result[self.inputs[0]].keys())
+        return list(self.result.columns.drop(['Input', 'Name']))
+
+    @property
+    def means(self) -> pd.DataFrame:
+        """Return the means of the outputs as pandas DataFrame
+
+        Returns
+        -------
+        pd.DataFrame
+            means of the benchmark
+
+        """
+        means = self.result.groupby(['Input']).mean(numeric_only=True).reset_index()
+        means['Name'] = self.name
+        return means
+
+    @property
+    def std(self) -> pd.DataFrame:
+        """Return the standard deviation of the outputs as pandas DataFrame
+
+        Returns
+        -------
+        pd.DataFrame
+            std of the benchmark
+
+        """
+        std = self.result.groupby(['Input']).std(numeric_only=True).reset_index()
+        std['Name'] = self.name
+        return std
+
+    @property
+    def name(self) -> str:
+        """Return the name of the benchmark
+
+        Returns
+        -------
+        str
+            name of the benchmark
+
+        """
+        return self.result['Name'].values[0]

@@ -1,7 +1,7 @@
 """Decorator for the function to be benchmarked
 
 Includes
-- time (track time for each iteration)
+- timer (track time for each iteration)
 
 """
 
@@ -22,7 +22,7 @@ def timer(func):
     Returns
     -------
     Callable[..., Dict[Union[str, float], float]]
-        function to be benchmarked with additional time needed output
+        function to be benchmarked with additional time needed as output
     """
     @wraps(func)
     def function_with_timer(*args, **kwargs):
@@ -30,7 +30,7 @@ def timer(func):
         result = func(*args, **kwargs)
         end_time = time.perf_counter()
         total_time = end_time - start_time
-        result["time"] = total_time
+        result['time'] = total_time
         return result
 
     return function_with_timer
