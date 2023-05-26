@@ -11,7 +11,7 @@ if __name__ == '__main__':
         license='MIT',
         description='Small package for benchmarking python functions',
         long_description=readme(),
-        long_description_content_type='text/markdown'
+        long_description_content_type='text/markdown',
         author='Nicolai Palm',
         author_email='nicolaipalm@googlemail.com',
         classifiers=[
