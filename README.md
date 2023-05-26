@@ -1,3 +1,5 @@
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://share.streamlit.io/jkanner/streamlit-audio/main/app.py)
+
 # PyBe - benchmark your Python functions
 
 Benchmark any (scientific) function which outputs floats, store (as yaml, csv or excel)
@@ -47,13 +49,20 @@ Look at the benchmark.yaml file in your directory!
 You can view the results also directly in Python or write them to an excel or csv file
 
 ```python
-print(benchmark.inputs, benchmark.name_outputs) # print inputs and names of outputs
-print(benchmark.result) # print plain results as stored in benchmark.yaml
-print(benchmark.result_data_frame) # print the results as a pandas data frame
-benchmark.to_excel(name="my_results") # write results as excel
-benchmark.to_csv(name="my_results") # write results as csv
+print(benchmark.inputs, benchmark.name_outputs)  # print inputs and names of outputs
+print(benchmark.result)  # print results as stored in benchmark.csv
+benchmark.to_excel(name="my_results")  # write results as excel
+benchmark.to_csv(name="my_results")  # write results as csv
 
 ```
+
+You can read any of the benchmark results by simply initializing the
+benchmark class with parameter the .yaml benchmark file path
+
+```python
+benchmark = Benchmark(benchmark__file_path)
+```
+## Structure of benchmark csv
 
 ## Dashboard
 (Dashboard link)

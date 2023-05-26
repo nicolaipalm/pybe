@@ -1,8 +1,10 @@
 from setuptools import setup
 
+
 def readme():
     with open('README.md') as f:
         return f.read()
+
 
 if __name__ == '__main__':
     setup(
@@ -19,7 +21,7 @@ if __name__ == '__main__':
             'License :: OSI Approved :: MIT License',
             'Operating System :: OS Independent',
         ],
-        python_requires='>=3.11',
+        python_requires='>=3.9',
         install_requires=[
             'numpy',
             'plotly',
