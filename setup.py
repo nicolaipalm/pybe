@@ -1,12 +1,17 @@
 from setuptools import setup
 
+def readme():
+    with open('README.md') as f:
+        return f.read()
+
 if __name__ == '__main__':
     setup(
         name='pybe',
         version='0.0.1',
         license='MIT',
         description='Small package for benchmarking python functions',
-        long_description='This is my long description',
+        long_description=readme(),
+        long_description_content_type='text/markdown'
         author='Nicolai Palm',
         author_email='nicolaipalm@googlemail.com',
         classifiers=[
