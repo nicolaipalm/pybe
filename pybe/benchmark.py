@@ -7,10 +7,13 @@ import multiprocessing as mp
 class Benchmark:
     """Benchmark any Python function
 
-    This class lets you
-    **benchmark** any Python function (with vectors of real numbers as output)
-    **store** the results in a csv (default) or excel file
-    **read** from previous benchmark results.
+    pybe.Benchmark allows you to:
+
+    * **benchmark** any Python function (with vectors of real numbers as output)
+
+    * **store** the results in a csv (default) or excel file and
+
+    * **read** from previous benchmark results.
 
     .. epigraph::
         **How it works:**
@@ -57,7 +60,7 @@ class Benchmark:
         --------
         Initialize the benchmark class.
 
-        benchmark = Benchmark()
+        >>> benchmark = Benchmark()
 
         Define the function to be benchmarked. This function must take a single argument (float or string) and return
         a dictionary where each key represents one output
@@ -119,7 +122,7 @@ class Benchmark:
         Parameters
         ----------
         name : str
-            _name of the benchmark
+            name of the benchmark
         """
         self.result.to_excel(f'{name}.xlsx')
 
@@ -129,7 +132,7 @@ class Benchmark:
         Parameters
         ----------
         name : str
-            _name of the benchmark
+            name of the benchmark
         """
         self.result.to_csv(f'{name}.csv', index=False)
 
@@ -145,21 +148,21 @@ class Benchmark:
         """
         return self._result
 
-    def read_from_csv(self, benchmark_yaml_file_path: str):
+    def read_from_csv(self, benchmark_csv_file_path: str):
         """Read previous results of corresponding yaml file and store them in this instance
 
         Parameters
         ----------
-        benchmark_yaml_file_path : str
+        benchmark_csv_file_path : str
             path of benchmark yaml file
 
         Examples
         --------
         >>> benchmark = Benchmark() # initialize benchmark instance
-        >>> benchmark.read_from_csv(benchmark_csv_file_path="./benchmark1.csv") # read results
+        >>> benchmark.read_from_csv(benchmark_csv_file_path="./benchmark.csv") # read results
         >>> print(benchmark.result) # print result
         """
-        self._result = pd.read_csv(benchmark_yaml_file_path)
+        self._result = pd.read_csv(benchmark_csv_file_path)
 
     def return_outputs(self, input: float):
         return self.result.loc[self.result['Input'] == input]

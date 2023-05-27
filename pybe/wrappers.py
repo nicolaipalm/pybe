@@ -1,7 +1,8 @@
 """Decorator for the function to be benchmarked
 
 Includes
-- timer (track time for each iteration)
+
++ timer (track time for each iteration)
 
 """
 
@@ -23,6 +24,10 @@ def timer(func):
     -------
     Callable[..., Dict[Union[str, float], float]]
         function to be benchmarked with additional time needed as output
+
+    Examples
+    --------
+
     """
     @wraps(func)
     def function_with_timer(*args, **kwargs):
