@@ -43,16 +43,19 @@ a real number (float).
 
 Then, your benchmark function looks as follows:
 
+```python
     def benchmark_function(number_of_runs):
         result_optimizer = optimizer(test_function,number_of_runs)
         return {"name_performance_metric": performance_metric(result_optimizer)}
-
+```
 Lets say you want to benchmark your optimization algorithm for number of runs 10,100 and 1000.
 Now, you can simply benchmark your optimization algorithm by using the pybe Benchmark class.
 
+```python
     from pybe.benchmark import Benchmark
     benchmark = Benchmark()
     benchmark(function=benchmark_function,inputs=[10,100,1000],name="name_of_my_optimization_algorithm")
+```
 
 Drag the resulting **name_of_my_optimization_algorithm.csv** into the [Dashboard](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app) and thats it!
 
