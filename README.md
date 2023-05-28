@@ -20,14 +20,16 @@ The general structure of a benchmark script is as follows:
 - you assess quantities of interest (i.e. some performance metric) to the output of the algorithm
 
 This can be implemented as a Python function:
-
+```python
     def benchmark_function(input):
         result = algorithm(input)
         return {"name_performance_metric_1": performance_metric_1(result),"name_performance_metric_2": performance_metric_1(result),...}
-
+```
 
 In order to benchmark your algorithm you simply need to call the above function to all sets of inputs.
-This and [storing your results](#structure-of-benchmark-csv) is taken care of by the Benchmark class in pybe.benchmark.
+Furthermore, the output of an algorithm is rarely deterministic. Therefore,
+you want to repeat evaluating your algorithm at a given input in order to statistical analyze the performance.
+All of this and [storing your results](#structure-of-benchmark-csv) is taken care of by the Benchmark class in pybe.benchmark.
 Lets look at a concrete example.
 
 ### Example: Optimization algorithm
@@ -49,12 +51,13 @@ Then, your benchmark function looks as follows:
         return {"name_performance_metric": performance_metric(result_optimizer)}
 ```
 Lets say you want to benchmark your optimization algorithm for number of runs 10,100 and 1000.
+In order to statistical analyse the performance, you evaluate 200 times at each input.
 Now, you can simply benchmark your optimization algorithm by using the pybe Benchmark class.
 
 ```python
     from pybe.benchmark import Benchmark
     benchmark = Benchmark()
-    benchmark(function=benchmark_function,inputs=[10,100,1000],name="name_of_my_optimization_algorithm")
+    benchmark(function=benchmark_function,inputs=[10,100,1000],number_runs=200,name="name_of_my_optimization_algorithm")
 ```
 
 Drag the resulting **name_of_my_optimization_algorithm.csv** into the [Dashboard](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app) and thats it!
@@ -99,7 +102,7 @@ benchmark(test_function,
           store=True, # store the benchmark results
           number_runs=10)
 ```
-Look at the benchmark.csv file in your directory!
+Look at the test_benchmark.csv file in your directory!
 
 You can view the results also directly in Python or write them to an Excel or csv file
 
