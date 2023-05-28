@@ -1,5 +1,5 @@
 [Visualization](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app) //
-[Documentation](benchmark link)
+[Documentation](https://pybe.readthedocs.io/en/latest/source/benchmark.html)
 
 # PyBe - benchmark your Python functions
 
