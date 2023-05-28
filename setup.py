@@ -9,9 +9,9 @@ def readme():
 if __name__ == '__main__':
     setup(
         name='pybe',
-        version='0.0.2',
+        version='1.0.0',
         license='MIT',
-        description='Small package for benchmarking python functions',
+        description='Benchmarking python functions',
         long_description=readme(),
         long_description_content_type='text/markdown',
         author='Nicolai Palm',
