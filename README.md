@@ -1,9 +1,12 @@
+[Visualization](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app) //
+[Documentation](benchmark link)
+
 # PyBe - benchmark your Python functions
 
-Benchmark any (scientific) function, store (as csv or Excel), read and [**visualize**](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app)
-the results with only a few lines of code.
+Benchmark any (Python) function, store (as csv or Excel), read and [visualize](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app)
+the results with only a few lines of code!
 
-Table of Contents:
+*Table of Contents:*
 1. [Structure of a benchmark](#structure-of-a-benchmark)
 2. [Installation](#installation)
 3. [Getting started](#getting-started)
@@ -38,19 +41,20 @@ performs for specific number of runs.
 For this you have a performance metric which can be called to the output of the optimization and returns
 a real number (float).
 
-Then,
+Then, your benchmark function looks as follows:
 
     def benchmark_function(number_of_runs):
         result_optimizer = optimizer(test_function,number_of_runs)
         return {"name_performance_metric": performance_metric(result_optimizer)}
 
 Lets say you want to benchmark your optimization algorithm for number of runs 10,100 and 1000.
-Now, you can simply benchmark your optimization algorithm
+Now, you can simply benchmark your optimization algorithm by using the pybe Benchmark class.
 
+    from pybe.benchmark import Benchmark
     benchmark = Benchmark()
     benchmark(function=benchmark_function,inputs=[10,100,1000],name="name_of_my_optimization_algorithm")
 
-Drag the resulting ***name_of_my_optimization_algorithm.csv*** into the [Dashboard](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app) and thats it!
+Drag the resulting **name_of_my_optimization_algorithm.csv** into the [Dashboard](https://nicolaipalm-pybe-dashboard-dashboard-yb61qz.streamlit.app) and thats it!
 
 ## Installation
 The official release is available at PyPi:
@@ -92,7 +96,7 @@ benchmark(test_function,
           store=True, # store the benchmark results
           number_runs=10)
 ```
-Look at the benchmark.yaml file in your directory!
+Look at the benchmark.csv file in your directory!
 
 You can view the results also directly in Python or write them to an Excel or csv file
 
@@ -120,10 +124,12 @@ The structure of the resulting csv is supposed to be very intuitive:
 - one column for each output
 
 For example:
-- the function has two output: time and value
+- the function has two outputs: time and value
 - is benchmarked at inputs 10 and 100
 - has name Hello
 - is evaluated once for each input
+
+Then, the resulting csv/Excel has the following structure:
 
 |   | value    | time  | Input | Name |
 |---|----------|-------|-------|------|

@@ -117,7 +117,7 @@ class Benchmark:
             self.to_csv(name)
 
     def to_excel(self, name: str = 'benchmark'):
-        """Save results to excel (xlsx) file
+        """Save results to excel (xlsx) file (file path is file path of script)
 
         Parameters
         ----------
@@ -127,7 +127,7 @@ class Benchmark:
         self.result.to_excel(f'{name}.xlsx')
 
     def to_csv(self, name: str = 'benchmark'):
-        """Save results to csv file
+        """Save results to csv file (file path is file path of script)
 
         Parameters
         ----------
